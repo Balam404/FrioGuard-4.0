@@ -1,0 +1,101 @@
+{
+  "version": 1,
+  "author": "FrioGuard 4.0 - Hackathon Jalisco 2026",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-esp32-devkit-v1", "id": "esp", "top": 177.5, "left": -5, "attrs": {} },
+    {
+      "type": "wokwi-ds18b20",
+      "id": "temp_in",
+      "top": -1.13,
+      "left": 330.48,
+      "attrs": { "temperature": "8", "deviceID": "111111111111" }
+    },
+    {
+      "type": "wokwi-ds18b20",
+      "id": "temp_out",
+      "top": -10.73,
+      "left": 532.08,
+      "attrs": { "temperature": "26", "deviceID": "222222222222" }
+    },
+    {
+      "type": "wokwi-slide-switch",
+      "id": "puerta",
+      "top": 245,
+      "left": 355,
+      "attrs": { "value": "", "bounce": "0" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led_verde",
+      "top": 220,
+      "left": 555,
+      "attrs": { "color": "green", "label": "NORMAL" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led_rojo",
+      "top": 322.8,
+      "left": 551,
+      "attrs": { "color": "red", "label": "ALERTA" }
+    },
+    {
+      "type": "wokwi-buzzer",
+      "id": "buzzer",
+      "top": 463.2,
+      "left": 453,
+      "attrs": { "volume": "0.35" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "pull_in",
+      "top": 85,
+      "left": 335,
+      "attrs": { "value": "4700" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "pull_out",
+      "top": 85,
+      "left": 535,
+      "attrs": { "value": "4700" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "res_verde",
+      "top": 265,
+      "left": 560,
+      "attrs": { "value": "220" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "res_rojo",
+      "top": 365,
+      "left": 560,
+      "attrs": { "value": "220" }
+    }
+  ],
+  "connections": [
+    [ "esp:3V3", "temp_in:VCC", "red", [] ],
+    [ "esp:GND.1", "temp_in:GND", "black", [] ],
+    [ "esp:D4", "temp_in:DQ", "green", [] ],
+    [ "pull_in:1", "temp_in:DQ", "green", [] ],
+    [ "pull_in:2", "temp_in:VCC", "red", [] ],
+    [ "esp:3V3", "temp_out:VCC", "red", [] ],
+    [ "esp:GND.1", "temp_out:GND", "black", [] ],
+    [ "esp:RX2", "temp_out:DQ", "green", [] ],
+    [ "pull_out:1", "temp_out:DQ", "green", [] ],
+    [ "pull_out:2", "temp_out:VCC", "red", [] ],
+    [ "esp:D27", "puerta:2", "blue", [] ],
+    [ "puerta:1", "esp:GND.2", "black", [] ],
+    [ "esp:D5", "led_verde:A", "green", [] ],
+    [ "led_verde:C", "res_verde:1", "green", [] ],
+    [ "res_verde:2", "esp:GND.1", "black", [] ],
+    [ "esp:D18", "led_rojo:A", "red", [] ],
+    [ "led_rojo:C", "res_rojo:1", "red", [] ],
+    [ "res_rojo:2", "esp:GND.1", "black", [] ],
+    [ "esp:D19", "buzzer:2", "green", [] ],
+    [ "buzzer:1", "esp:GND.1", "black", [] ]
+  ],
+  "dependencies": {}
+}
