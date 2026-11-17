@@ -1,0 +1,298 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FríoGuard 4.0 | Simulador 3D</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="welcome-open">
+
+<!-- PORTADA FRIOGUARD 4.0 -->
+<section class="welcome-screen" id="welcomeScreen">
+  <div class="welcome-container">
+
+    <div class="welcome-intro">
+      <div class="welcome-logo">❄ FRÍOGUARD 4.0</div>
+      <div class="welcome-kicker">HACKATHON JALISCO 2026 · INDUSTRIA 4.0</div>
+
+      <h1>Tu cadena de frío,<span> bajo control.</span></h1>
+
+      <p>
+        Plataforma inteligente para monitorear cámaras frigoríficas,
+        supervisar temperaturas, detectar fallas y registrar eventos
+        mediante tecnología IoT.
+      </p>
+
+      <div class="welcome-highlights">
+        <span>Monitoreo IoT</span>
+        <span>Alertas en tiempo real</span>
+        <span>Reportes PDF</span>
+      </div>
+
+      <p class="welcome-footnote">
+        Prototipo experimental conectado a ESP32 mediante Wokwi y MQTT.
+      </p>
+    </div>
+
+    <div class="welcome-form-card">
+      <h2>Registro de cámara frigorífica</h2>
+      <p>Ingresa los datos del equipo que deseas monitorear.</p>
+
+      <form id="registerForm">
+
+        <label>Nombre de la cámara</label>
+        <input id="cameraName" type="text"
+               placeholder="Ej. Cámara principal"
+               maxlength="70" required>
+
+        <label>Identificador</label>
+        <input id="cameraCode" type="text"
+               placeholder="Ej. FG-001"
+               maxlength="40" required>
+
+        <label>Empresa o proyecto</label>
+        <input id="cameraCompany" type="text"
+               placeholder="Ej. Empresa industrial"
+               maxlength="70">
+
+        <label>Ubicación</label>
+        <input id="cameraLocation" type="text"
+               placeholder="Ej. Área de almacenamiento"
+               maxlength="80">
+
+        <button class="welcome-primary" type="submit">
+          Registrar y entrar al sistema
+        </button>
+
+      </form>
+
+      <button id="enterDemo" class="welcome-secondary"
+              type="button">
+        Entrar sin registrar · Modo demostración
+      </button>
+    </div>
+
+  </div>
+</section>
+<!-- FIN DE LA PORTADA -->
+
+<div class="wrap">
+
+  <!-- ENCABEZADO -->
+  <header class="head">
+    <div class="identity">
+      <div class="logo">❄</div>
+      <div>
+        <h1>FríoGuard <span style="color:#7bcaff">4.0</span></h1>
+        <p>Gemelo digital experimental · Industria 4.0 · Hackathon Jalisco 2026</p>
+      </div>
+    </div>
+
+    <div class="status" id="mainStatus">
+      <span class="dot"></span>
+      <span id="mainStatusText">SISTEMA NORMAL</span>
+    </div>
+  </header>
+  
+<!-- CONEXIÓN CON WOKWI -->
+<div class="toolrow" style="margin:14px 0;gap:10px;">
+  <button id="conectarWokwi" type="button">
+    📡 Conectar Wokwi
+  </button>
+
+  <button id="modoLocal" type="button">
+    Modo local
+  </button>
+
+  <span class="chip" id="estadoMQTT">
+    Sin conexión con Wokwi
+  </span>
+</div>
+  
+<!-- INFORMACIÓN DE LA CÁMARA -->
+<div class="camera-details">
+  <div>
+    <span class="camera-eyebrow">CÁMARA MONITOREADA</span>
+    <strong id="registeredCamera">Sin registro</strong>
+    <small id="registeredDetails">
+      Identificación del equipo
+    </small>
+  </div>
+
+  <button id="editRegistration" type="button">
+    Cambiar registro
+  </button>
+</div>
+
+
+  <div class="layout">
+
+    <!-- CAMARA FRIGORIFICA 3D -->
+    <section class="card">
+      <div class="card-title">
+        <h2>Vista 3D · Cámara de refrigeración</h2>
+        <span class="sub">PROTOTIPO VIRTUAL</span>
+      </div>
+
+      <div class="sim-body">
+        <canvas id="scene"></canvas>
+
+        <span class="scene-badge">SIMULACIÓN 3D</span>
+        <span class="scene-label" id="sceneLabel">
+          INTERIOR 4.0 °C
+        </span>
+        <span class="orbithint">
+          Arrastra para girar · Rueda para acercar
+        </span>
+      </div>
+
+      <div class="toolrow">
+        <span class="chip">
+          DS18B20 · Sensor de puerta · Alarma virtual
+        </span>
+        <button id="resetCamera">Restablecer vista</button>
+      </div>
+    </section>
+
+    <!-- PANEL DE MONITOREO -->
+    <div class="right">
+
+      <section class="card">
+        <div class="card-title">
+          <h2>Monitoreo en vivo</h2>
+          <span class="sub">DATOS SIMULADOS</span>
+        </div>
+
+        <div class="kpis">
+
+          <div class="metric">
+            <label>Temperatura interior</label>
+            <strong id="insideT" class="green">4.0 °C</strong>
+            <small>Rango de prueba: 0–5 °C</small>
+          </div>
+
+          <div class="metric">
+            <label>Temperatura exterior</label>
+            <strong id="outsideT">26.0 °C</strong>
+            <small>Sensor DS18B20 virtual</small>
+          </div>
+
+          <div class="metric">
+            <label>Puerta</label>
+            <strong id="doorStatus" class="green">CERRADA</strong>
+            <small>Sensor magnético MC-38</small>
+          </div>
+
+          <div class="metric">
+            <label>Alerta</label>
+            <strong id="alarmStatus" class="green">NORMAL</strong>
+            <small id="alarmReason">Sin incidencias</small>
+          </div>
+
+        </div>
+        <div style="height:15px"></div>
+      </section>
+
+      <!-- CONTROLES -->
+      <section class="card control-panel">
+
+        <div class="rowl">
+          <div>
+            <b>Controles de la simulación</b>
+            <br>
+            <small>Prueba las anomalías del sistema</small>
+          </div>
+          <button class="sound" id="toggleSound">
+            Activar sonido
+          </button>
+        </div>
+
+        <div class="bar"></div>
+
+        <div>
+          <div class="rowl">
+            <b>Temperatura interna</b>
+            <strong id="tempIndicator">4.0 °C</strong>
+          </div>
+
+          <input id="tempSlider" type="range"
+                 min="-5" max="15" step="0.1" value="4">
+
+          <div class="rowl">
+            <small>-5 °C</small>
+            <small>15 °C</small>
+          </div>
+        </div>
+
+        <div class="buttons">
+          <button id="doorButton">Abrir puerta</button>
+          <button id="failureButton" class="danger">
+            Simular falla 8 °C
+          </button>
+          <button id="coolingButton">
+            Falla de enfriamiento: NO
+          </button>
+          <button id="resetButton" class="safe">
+            Restaurar sistema
+          </button>
+        </div>
+
+        <div class="info">
+          <strong id="riskText">
+            Lote FG-0247: sin exposición térmica registrada.
+          </strong>
+          <br>
+          Riesgo potencial; no determina inocuidad.
+        </div>
+
+        <div class="soundrow">
+          <span class="sub">Simulación independiente de Wokwi</span>
+          <button class="ghost" id="exportPDF" type="button">
+  Descargar reporte PDF
+</button>
+          <button class="ghost" id="exportButton">
+            Descargar CSV
+          </button>
+        </div>
+
+      </section>
+    </div>
+  </div>
+
+  <!-- GRAFICAS E HISTORIAL -->
+  <div class="bottom">
+
+    <section class="card">
+      <div class="card-title">
+        <h2>Historial de temperatura</h2>
+        <span class="sub" id="sampleLabel">Muestras simuladas</span>
+      </div>
+      <div class="chartp">
+        <canvas id="chart"></canvas>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-title">
+        <h2>Registro de eventos</h2>
+        <span class="sub">LOTE FG-0247</span>
+      </div>
+      <div class="events" id="events"></div>
+    </section>
+
+  </div>
+
+  <div class="footer">
+    <span>FríoGuard 4.0 · Hackathon Jalisco 2026</span>
+    <span>Prototipo virtual con datos simulados</span>
+  </div>
+
+</div>
+
+<script src="https://unpkg.com/mqtt@5.10.3/dist/mqtt.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
